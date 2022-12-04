@@ -5,6 +5,15 @@
 //License: MIT https://github.com/jitbit/HtmlSanitizer/blob/master/LICENSE
 'use strict'
 
+/**
+ * Static function type that will whitelist an input 
+ * @type {{Function():string}}} 
+ * @param: AllowedTags (Object): key/value pairs of allowed tags
+ * @param: AllowedAttributes (Object): key/value pairs of allowed attributes
+ * @param: AllowedCssStyles (Object): key/value pairs of allowed css styles
+ * @param: AllowedSchemas (Object): key/value pairs of allowed schemas
+ * @return: string
+ */
 const HtmlSanitizer = new (function () {
 
 	const _tagWhitelist = {
@@ -23,10 +32,22 @@ const HtmlSanitizer = new (function () {
 
 	const _uriAttributes = { 'href': true, 'action': true };
 
+	const _stripBrackets = '{}[]<>';
+
 	const _parser = new DOMParser();
 
-	this.SanitizeHtml = function (input, extraSelector) {
-		input = input.trim();
+	/**
+	 * Whitelists input and returns clean (sanitized) html string
+	 * @type {function}
+	 * @param {string} input 
+	 * @param {string} extraSelector: String containing valid selectors (https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors) 
+	 * @param {boolean} IsHtml: If true (default), return innerHtml from dom. If false, returns innerText from dom.
+	 * @returns 
+	 */
+	this.SanitizeHtml = function (input, extraSelector, IsHtml, IsNumber, StripBrackets) {
+	let doc;
+	try {
+			input = input.trim();
 		if (input == "") return ""; //to save performance
 
 		//firefox "bogus node" workaround for wysiwyg's
@@ -34,7 +55,12 @@ const HtmlSanitizer = new (function () {
 
 		if (input.indexOf("<body")==-1) input = "<body>" + input + "</body>"; //add "body" otherwise some tags are skipped, like <style>
 
-		let doc = _parser.parseFromString(input, "text/html");
+			doc = _parser.parseFromString(input, "text/html");	
+		
+		IsHtml = (IsHtml | IsHtml == undefined) ? true:false;			//default is true
+		IsNumber = (!IsNumber | IsNumber == undefined) ? false:true;	//default is false
+
+		StripBrackets = (StripBrackets == undefined) ? this.StripBrackets : StripBrackets;
 
 		//DOM clobbering check (damn you firefox)
 		if (doc.body.tagName !== 'BODY')
@@ -91,9 +117,34 @@ const HtmlSanitizer = new (function () {
 
 		let resultElement = makeSanitizedCopy(doc.body);
 		
-		return resultElement.innerHTML
-			.replace(/(<br[^>]*>(\S))*(\n)/g, "<br>$1")
-			.replace(/div><div/g, "div>\n<div"); //replace is just for cleaner code
+		switch (IsHtml)
+		{
+			case true:
+				return resultElement.innerHTML
+					.replace(/(<br[^>]*>(\S))*(\n)/g, "<br>$1")
+					.replace(/div><div/g, "div>\n<div"); //replace is just for cleaner code
+			default: 
+				let str;
+				//!IsHtml ==> IsText
+				//to do: strip brackets
+				switch (IsNumber)
+				{
+					case true:
+						str = resultElement.innerText.replace(/(<br[^>]*>(\S))*(\n)/g, "")
+						.replace(/\n*(<br>)*/g, ''); 	
+						str = str.match(/((\d)+(\.)*(\d)*)/g)[0];
+						str = parseFloat(str).toString();
+						return str;
+					default:
+						str = resultElement.innerText.replace(/(<br[^>]*>(\S))*(\n)/g, "<br>$1")
+						.replace(/\n*(<br>)*/g, ''); 
+						return str;	
+				}
+				
+		}
+	} catch (error) {
+		return "err";
+	}	
 	}
 
 	function startsWithAny(str, substrings) {
@@ -109,4 +160,5 @@ const HtmlSanitizer = new (function () {
 	this.AllowedAttributes = _attributeWhitelist;
 	this.AllowedCssStyles = _cssWhitelist;
 	this.AllowedSchemas = _schemaWhiteList;
+	this.StripBrackets = _stripBrackets;
 });
