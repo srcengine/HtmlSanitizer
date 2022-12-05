@@ -1,8 +1,11 @@
-//JavaScript HTML Sanitizer v2.0.2, (c) Alexander Yumashev, Jitbit Software.
+//JavaScript HTML Sanitizer w/ Strip Brackets v2.0.2, (c) Sean Colligan, SRC Trades, llc.
 
-//homepage https://github.com/jitbit/HtmlSanitizer
+//Original works from: JavaScript HTML Sanitizer v2.0.2, (c) Alexander Yumashev, Jitbit Software. (https://github.com/jitbit/HtmlSanitizer)
 
-//License: MIT https://github.com/jitbit/HtmlSanitizer/blob/master/LICENSE
+//homepage https://github.com/srcengine/HtmlSanitizer
+
+//License: MIT https://github.com/srcengine/HtmlSanitizer/blob/master/LICENSE
+
 'use strict'
 
 /**
