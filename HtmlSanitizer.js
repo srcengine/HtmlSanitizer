@@ -42,9 +42,11 @@ const HtmlSanitizer = new (function () {
 	/**
 	 * Whitelists input and returns clean (sanitized) html string
 	 * @type {function}
-	 * @param {string} input 
+	 * @param {string} input: Html string to sanitize 
 	 * @param {string} extraSelector: String containing valid selectors (https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors) 
 	 * @param {boolean} IsHtml: If true (default), return innerHtml from dom. If false, returns innerText from dom.
+	 * @param {boolean} IsNumber: If false (default), returns text. If true, strips all non-digit numbers and parses for number, then returns value. 
+	 * @param {string} StripBrackets: String containing supported bracket characters to strip. If any one bracket is found, this strips all associated. Default '<>{}[]'
 	 * @returns 
 	 */
 	this.SanitizeHtml = function (input, extraSelector, IsHtml, IsNumber, StripBrackets) {
@@ -62,7 +64,6 @@ const HtmlSanitizer = new (function () {
 		
 		IsHtml = (IsHtml | IsHtml == undefined) ? true:false;			//default is true
 		IsNumber = (!IsNumber | IsNumber == undefined) ? false:true;	//default is false
-
 		StripBrackets = (StripBrackets == undefined) ? this.StripBrackets : StripBrackets;
 
 		//DOM clobbering check (damn you firefox)
@@ -124,12 +125,24 @@ const HtmlSanitizer = new (function () {
 		{
 			case true:
 				return resultElement.innerHTML
-					.replace(/(<br[^>]*>(\S))*(\n)/g, "<br>$1")
+					.replace(/(<br[^>]*>(\S))/g, "<br>$1")
 					.replace(/div><div/g, "div>\n<div"); //replace is just for cleaner code
 			default: 
-				let str;
 				//!IsHtml ==> IsText
 				//to do: strip brackets
+				let str = resultElement.innerText;
+				
+				if (IsNumber || StripBrackets.indexOf("<") != -1 || StripBrackets.indexOf(">") != -1)
+				str = str.replace(/(\<{1}(.*?\n*?)*?\>{1}){1}(.*?\n*?)+?(\<{1}(.*?\n*?)*?\>{1})/g, '')
+				.replace(/(\<){1}.*?(\>{1})/g, '');
+				
+				if (IsNumber || StripBrackets.indexOf("{") != -1 || StripBrackets.indexOf("}") != -1)
+				str = str.replace(/(\{{1}(.*?\n*?)*?\}{1}){1}(.*?\n*?)+?(\{{1}(.*?\n*?)*?\}{1})/g, '')
+				.replace(/(\{){1}.*?(\}{1})/g, '');
+
+				if (IsNumber || StripBrackets.indexOf("[") != -1 || StripBrackets.indexOf("]") != -1)
+				str = str.replace(/(?=\[){1}(.*?\n*?)*(\]{1})/g, '');
+
 				switch (IsNumber)
 				{
 					case true:
