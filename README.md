@@ -1,4 +1,4 @@
-# JS Html Sanitizer
+# [JS Html Sanitizer](https://srcengine.github.io/HtmlSanitizer/HtmlSanitizer.js)
 
 Client-side HTML Sanitizer (front-end only, i.e. "needs a browser", won't work in `Node`) to prevent XSS and unwanted tags in UGC.
 
