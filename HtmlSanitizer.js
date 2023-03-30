@@ -132,6 +132,11 @@ const HtmlSanitizer = new (function () {
 				//to do: strip brackets
 				let str = resultElement.innerText;
 				
+				//to do: implement regex: "(\<{1}(.?\n?)*?\>{1}){1}(.?)*(\n?)*?(\<{1}(.?\n?)*?\>{1})"
+				//which strips everything between two-pairs of angle brackets, i.e.:
+				//  all this content is stripped: <> blah blah <>
+				//  all this is stripped: <script1> script <div>
+				//modify regex for second replace, or unpaired brackets
 				if (IsNumber || StripBrackets.indexOf("<") != -1 || StripBrackets.indexOf(">") != -1)
 				str = str.replace(/(\<{1}(.*?\n*?)*?\>{1}){1}(.*?\n*?)+?(\<{1}(.*?\n*?)*?\>{1})/g, '')
 				.replace(/(\<){1}.*?(\>{1})/g, '');
