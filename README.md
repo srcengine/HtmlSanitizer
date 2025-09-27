@@ -11,13 +11,7 @@ Client-side HTML Sanitizer (front-end only, i.e. "needs a browser", won't work i
 ### Install
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/jitbit/HtmlSanitizer@master/HtmlSanitizer.js"></script>
-```
-
-or
-
-```html
-<script src="https://unpkg.com/@jitbit/htmlsanitizer@latest/HtmlSanitizer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@jitbit/htmlsanitizer@latest/HtmlSanitizer.min.js"></script>
 ```
 
 or
@@ -78,13 +72,13 @@ Fastest is HtmlSanitizer
 
 ## Schemas allowed by default
 
-`http:, https:, data:, mailto:`
+`http:, https:, data:, m-files:, file:, ftp:, mailto:, pw:`
 
 (allowed in 'src', 'href' and similar "uri-attributes". To clean up stuff like `<a href='javascript:alert()'></a>`)
 
 ## Configuring
 
-Allowed tags, attributes and styles are listed in `AllowedTags`, `AllowedAttributes` and `AllowedCssStyles` public properties. To disallow a tag remove it from the dictionary like this:
+Allowed tags, attributes, schemas and styles are listed in `AllowedTags`, `AllowedAttributes`, `AllowedSchemas` and `AllowedCssStyles` public properties. To disallow a tag remove it from the dictionary like this:
 
 ```javascript
 delete HtmlSanitizer.AllowedTags['TABLE']; //mind the uppercase

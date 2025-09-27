@@ -1,4 +1,4 @@
-//JavaScript HTML Sanitizer v2.0.2, (c) Alexander Yumashev, Jitbit Software.
+//JavaScript HTML Sanitizer v2.0.3, (c) Alexander Yumashev, Jitbit Software.
 
 //homepage https://github.com/jitbit/HtmlSanitizer
 
@@ -92,7 +92,6 @@ const HtmlSanitizer = new (function () {
 		let resultElement = makeSanitizedCopy(doc.body);
 		
 		return resultElement.innerHTML
-			.replace(/<br[^>]*>(\S)/g, "<br>\n$1")
 			.replace(/div><div/g, "div>\n<div"); //replace is just for cleaner code
 	}
 
